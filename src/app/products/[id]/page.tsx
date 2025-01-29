@@ -1,6 +1,7 @@
 import ProductDetail from './ProductDetail'
 import { Product } from '@/types/product'
 
+// Remove PageProps import as it's not needed in App Router
 export async function generateStaticParams() {
   try {
     const response = await fetch('https://api.escuelajs.co/api/v1/products')
@@ -18,8 +19,15 @@ export async function generateStaticParams() {
   }
 }
 
-export default async function ProductPage({ params }: { params: { id: string } }) {
-  const product = await fetch(`https://api.escuelajs.co/api/v1/products/${params.id}`)
+type Props = {
+  params: Promise<{
+    id: string
+  }>
+}
+
+export default async function ProductPage({ params }: Props) {
+  const resolvedParams = await params
+  const product = await fetch(`https://api.escuelajs.co/api/v1/products/${resolvedParams.id}`)
     .then(res => res.json())
 
   return <ProductDetail product={product} />
